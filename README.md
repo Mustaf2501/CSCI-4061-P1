@@ -1,2 +1,1 @@
-# CSCI-4061-P1
-CSCI 4061 P1
+Add your project details as mentioned in Section Deliverables.
