@@ -23,12 +23,22 @@ int main(int argc, char *argv[]) {
 		sendChunkData(inputFile, nMappers);
 		exit(0);
 	}
+
 	sleep(1);
 
 
 	// To do
 	// spawn mappers processes and run 'mapper' executable using exec
-	
+	for (int i =0 ; i < nMappers; i++){
+    int c = fork(); 
+
+    if( c == 0 ){
+      // child
+      // execl("/bin/echo", "/bin/echo", "hello", "there", NULL);
+      execl( "/mapper", "/mapper", i, NULL ); 
+    }
+  }
+  
 	// To do
 	// wait for all children to complete execution
     
