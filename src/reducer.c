@@ -1,5 +1,5 @@
 #include "reducer.h"
-
+finalKeyValueDS *rootReduce;
 // create a key value node
 finalKeyValueDS *createFinalKeyValueNode(char *word, int count){
 	finalKeyValueDS *newNode = (finalKeyValueDS *)malloc (sizeof(finalKeyValueDS));
@@ -43,13 +43,44 @@ void freeFinalDS(finalKeyValueDS *root) {
 
 // reduce function
 void reduce(char *key) {
+	FILE* word = fopen(key,"r");
+	char buff[255];
+	char fileName[100];
+	int count=0;
+	char *c;
+	//fscanf gets first word of file
+	fscanf(word, "%s", fileName);
 
+	while(*c = fgetc(word) != EOF)
+	{
+		if(strcmp(c,"1")==0)
+		{
+			++count;
+		}
+	}
+	insertNewKeyValue(rootReduce, fileName, count);
 }
 
 // write the contents of the final intermediate structure
 // to output/ReduceOut/Reduce_reducerID.txt
 void writeFinalDS(int reducerID){
-	
+		if(rootReduce == NULL) return;
+
+		finalKeyValueDS *tempNode = rootReduce -> next;
+		while (tempNode != NULL){
+	    char dir[100] = "output/ReduceOut/Reduce_";
+	    char id[100];
+			char key[100];
+	    //itoa(mapperID, id, 10);
+	    sprintf(id, "%d", reducerID);
+			FILE* word = fopen(strcat(strcat(dir, id),strcat(tempNode->key,".txt")),"w");
+				fputs(tempNode->key,word);
+				sprintf(key,"%d",tempNode->value);
+	    	fclose(word);
+			rootReduce = tempNode;
+			tempNode = tempNode -> next;
+		}
+
 }
 
 int main(int argc, char *argv[]) {
@@ -60,7 +91,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	// ###### DO NOT REMOVE ######
-	// initialize 
+	// initialize
 	int reducerID = strtol(argv[1], NULL, 10);
 
 	// ###### DO NOT REMOVE ######
