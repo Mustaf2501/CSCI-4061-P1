@@ -26,7 +26,7 @@ int main(int argc, char *argv[]) {
 
 	sleep(1);
 
-
+  int gittest;
 	// To do
 	// spawn mappers processes and run 'mapper' executable using exec
 	for (int i =0 ; i < nMappers; i++){
