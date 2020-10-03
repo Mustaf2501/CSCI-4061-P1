@@ -26,21 +26,27 @@ int main(int argc, char *argv[]) {
 
 	sleep(1);
 
-  int gittest;
+  pid_t c; 
+  char strID[50]; 
+
 	// To do
 	// spawn mappers processes and run 'mapper' executable using exec
-	for (int i =0 ; i < nMappers; i++){
-    int c = fork(); 
+	for (int i =1 ; i < nMappers + 1; i++){
+    pid_t c = fork(); 
 
     if( c == 0 ){
       // child
       // execl("/bin/echo", "/bin/echo", "hello", "there", NULL);
-      execl( "/mapper", "/mapper", i, NULL ); 
+      sprintf(strID, "%d", i);
+      execl( "./mapper", "./mapper", strID, NULL ); 
     }
   }
   
 	// To do
 	// wait for all children to complete execution
+  for(int i =0; i<nMappers; i++){
+    wait(NULL);
+  }
     
 
 	// ###### DO NOT REMOVE ######
@@ -56,9 +62,26 @@ int main(int argc, char *argv[]) {
 
 	// To do
 	// spawn reducer processes and run 'reducer' executable using exec
+  char strIDReduce[50];
+  pid_t g; 
+  
+	for (int i =1 ; i < nReducers + 1; i++){
+     g = fork(); 
 
+    if( g == 0 ){
+      // child
+      // execl("/bin/echo", "/bin/echo", "hello", "there", NULL);
+      sprintf(strIDReduce, "%d", i);
+      execl( "./reducer", "./reducer" ,strIDReduce, NULL);
+      
+    }
+  }
+  
 	// To do
 	// wait for all children to complete execution
+  for(int i =0; i<nReducers; i++){
+    wait(NULL);
+  }
 
 	return 0;
 }

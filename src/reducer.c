@@ -47,44 +47,59 @@ void reduce(char *key) {
 	char buff[255];
 	char fileName[100];
 	int count=0;
-	char *c;
+	int c;
+
 	//fscanf gets first word of file
 	fscanf(word, "%s", fileName);
-
-	while(*c = fgetc(word) != EOF)
+  
+	while(c = fgetc(word) != EOF)
 	{
-		if(strcmp(c,"1")==0)
+		if(c==1)
 		{
 			++count;
 		}
 	}
-	insertNewKeyValue(rootReduce, fileName, count);
+	rootReduce = insertNewKeyValue(rootReduce, fileName, count);
+  fclose(word);
 }
 
 // write the contents of the final intermediate structure
 // to output/ReduceOut/Reduce_reducerID.txt
 void writeFinalDS(int reducerID){
-		if(rootReduce == NULL) return;
+  
+  
+  	finalKeyValueDS *tempNode = rootReduce -> next;
+		if(rootReduce == NULL){
+       return;
+    }
+    char dir[100] = "output/ReduceOut/";
+    char id[100];
+    char key[100];
+    char tempName[100]; 
+    sprintf(id, "%d", reducerID);
+    FILE* word = fopen(strcat(strcat(dir, "Reducer_"),strcat(id,".txt")),"w");
+     
+    
 
-		finalKeyValueDS *tempNode = rootReduce -> next;
 		while (tempNode != NULL){
-	    char dir[100] = "output/ReduceOut/Reduce_";
-	    char id[100];
-			char key[100];
-	    //itoa(mapperID, id, 10);
-	    sprintf(id, "%d", reducerID);
-			FILE* word = fopen(strcat(strcat(dir, id),strcat(tempNode->key,".txt")),"w");
+
 				fputs(tempNode->key,word);
+        fputs(" ", word);
 				sprintf(key,"%d",tempNode->value);
-	    	fclose(word);
+	    	fputs(key,word);
+        fputs("\n",word);
 			rootReduce = tempNode;
 			tempNode = tempNode -> next;
 		}
-
+    fclose(word);
 }
-
+    /*sprintf(id, "%d/", mapperID); 
+    sprintf(tempName, "%s", tempNode->key);  
+		FILE* word = fopen(strcat(strcat(dir, id),strcat(tempName,".txt")),"w");
+    fputs(tempNode->key,word);
+    fputs(" ",word);
+*/    
 int main(int argc, char *argv[]) {
-
 	if(argc < 2){
 		printf("Less number of arguments.\n");
 		printf("./reducer reducerID");
@@ -104,6 +119,7 @@ int main(int argc, char *argv[]) {
 	// You may write this logic. You can somehow store the
 	// <key, value> count and write to Reduce_reducerID.txt file
 	// So you may delete this function and add your logic
+  
 	writeFinalDS(reducerID);
 
 	return 0;

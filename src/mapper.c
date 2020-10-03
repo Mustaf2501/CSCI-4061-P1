@@ -79,16 +79,18 @@ void freeInterDS(intermediateDS *root) {
 
 // emit the <key, value> into intermediate DS 
 void emit(char *key, char *value) {
-  insertPairToInterDS(root,value,"1");
+  root = insertPairToInterDS(root,key,value);
+  
 }
 
 
 // map function
 void map(char *chunkData){
   int i = 0;
-  char *buffer;
+  char *buffer; 
   while ((buffer = getWord(chunkData, &i)) != NULL){
       emit(buffer, "1");
+       
  }
 	// you can use getWord to retrieve words from the 
 	// chunkData one by one. Example usage in utils.h
@@ -98,21 +100,28 @@ void map(char *chunkData){
 // Each file will have only one line : word 1 1 1 1 1 ...
 void writeIntermediateDS(int mapperID){
 
-	if(root == NULL) return;
-
+	if(root == NULL){
+    printf("test");
+    return; 
+  }
 	intermediateDS *tempNode = root -> next;
-	while (tempNode != NULL){
+	while (tempNode->next != NULL){
     char dir[100] = "output/MapOut/Map_";
     char id[100];
+    char tempName[100]; 
     //itoa(mapperID, id, 10); 
-    sprintf(id, "%d", mapperID);  
-		FILE* word = fopen(strcat(strcat(dir, id),strcat(tempNode->key,".txt")),"w");
-    
+    sprintf(id, "%d/", mapperID); 
+    sprintf(tempName, "%s", tempNode->key);  
+		FILE* word = fopen(strcat(strcat(dir, id),strcat(tempName,".txt")),"w");
+    fputs(tempNode->key,word);
+    fputs(" ",word);
+  
     while(tempNode->value->next != NULL) {
+      
       fputs((tempNode->value->value),word);
-      //
       tempNode->value = tempNode->value->next;
     }
+    
     fclose(word);
 		root = tempNode;
 		tempNode = tempNode -> next;
@@ -120,7 +129,6 @@ void writeIntermediateDS(int mapperID){
 }
 
 int main(int argc, char *argv[]) {
-	
 	if (argc < 2) {
 		printf("Less number of arguments.\n");
 		printf("./mapper mapperID\n");
@@ -149,12 +157,12 @@ int main(int argc, char *argv[]) {
 
 		strcpy(chunkData, retChunk);
 		free(retChunk);
-
+    
 		map(chunkData);
 	}
 
 	// ###### DO NOT REMOVE ######
 	writeIntermediateDS(mapperID);
-
+  freeInterDS(root);
 	return 0;
 }
