@@ -44,10 +44,7 @@ int main(int argc, char *argv[]) {
 	// spawn mappers processes and run 'mapper' executable using exec
 	for (int i =1 ; i < nMappers + 1; i++){
     pid_t c = fork(); 
-    if(c >0){
-      pid= waitpid(c, NULL, 0);
-    }
-    else if( c == 0 ) {
+     if( c == 0 ) {
       // child
       sprintf(strID, "%d", i);
       e = execl( "./mapper", "./mapper", strID, NULL );
@@ -67,6 +64,7 @@ int main(int argc, char *argv[]) {
   for(int i =0; i<nMappers; i++){
     w = wait(NULL);
     if(w == -1){
+       
       perror("Wait problem");
       exit(-1);
     }

@@ -14,7 +14,7 @@ Where #mappers is the number of mapper processes, #reducer is the number of redu
 What the program does:
 The program starts by taking in a text file and the number of mapper and reducer processes as input. It then calls mapper which creates individual text files for every unique word, and in the text file writes a series of 1's that each represent an instance in the text file. Once completed, reducer is called, which takes the individual text files and compiles them into one file per process that contains each unique word and the number of times that word is found in that chunk of the text file.
  
-Assumptions: 
+Assumptions: None
  
 Team:
 John Schmitz schm4722@umn.edu
