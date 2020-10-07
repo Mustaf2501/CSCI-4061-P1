@@ -88,10 +88,9 @@ void emit(char *key, char *value) {
 void map(char *chunkData){
   int i = 0;
   char *buffer; 
-  while ((buffer = getWord(chunkData, &i)) != NULL){
-      emit(buffer, "1");
-       
- }
+  while ((buffer = getWord(chunkData, &i)) != NULL){ //grabs individual words from chunk
+    emit(buffer, "1"); //calls emit to store them into the data structure
+  }
 	// you can use getWord to retrieve words from the 
 	// chunkData one by one. Example usage in utils.h
 }
@@ -100,30 +99,26 @@ void map(char *chunkData){
 // Each file will have only one line : word 1 1 1 1 1 ...
 void writeIntermediateDS(int mapperID){
 
-	if(root == NULL){
-    printf("test");
+	if(root == NULL){  //empty data structure
     return; 
   }
-	intermediateDS *tempNode = root -> next;
-	while (tempNode->next != NULL){
+	intermediateDS *tempNode = root; //
+	while (tempNode != NULL){ //while there is another word, create a new text file
     char dir[100] = "output/MapOut/Map_";
     char id[100];
     char tempName[100]; 
-    //itoa(mapperID, id, 10); 
     sprintf(id, "%d/", mapperID); 
     sprintf(tempName, "%s", tempNode->key);  
 		FILE* word = fopen(strcat(strcat(dir, id),strcat(tempName,".txt")),"w");
-    fputs(tempNode->key,word);
+    fputs(tempNode->key,word); //write word to text file
     fputs(" ",word);
   
-    while(tempNode->value->next != NULL) {
-      
-      fputs((tempNode->value->value),word);
+    while(tempNode->value->next !=NULL) { 
+      fputs((tempNode->value->value),word); //write value to text file
       tempNode->value = tempNode->value->next;
     }
     
     fclose(word);
-		root = tempNode;
 		tempNode = tempNode -> next;
 	}
 }

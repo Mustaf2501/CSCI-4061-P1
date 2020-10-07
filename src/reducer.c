@@ -31,14 +31,14 @@ finalKeyValueDS *insertNewKeyValue(finalKeyValueDS *root, char *word, int count)
 
 // free the DS after usage. Call this once you are done with the writing of DS into file
 void freeFinalDS(finalKeyValueDS *root) {
-	if(root == NULL) return;
+if(root == NULL) return;
 
-	finalKeyValueDS *tempNode = root -> next;;
-	while (tempNode != NULL){
-		free(root);
-		root = tempNode;
-		tempNode = tempNode -> next;
-	}
+finalKeyValueDS *tempNode = NULL;
+while (root != NULL){
+tempNode = root;
+root = root -> next;
+free(tempNode);
+}
 }
 
 // reduce function
@@ -51,11 +51,10 @@ void reduce(char *key) {
 
 	//fscanf gets first word of file
 	fscanf(word, "%s", fileName);
+  //printf("%s\n",fileName);
   
-	while(c = fgetc(word) != EOF)
-	{
-		if(c==1)
-		{
+	while(c = fgetc(word) != EOF)	{ //count numer of 1s in text file
+		if(c==1) {
 			++count;
 		}
 	}
@@ -67,38 +66,28 @@ void reduce(char *key) {
 // to output/ReduceOut/Reduce_reducerID.txt
 void writeFinalDS(int reducerID){
   
-  
-  	finalKeyValueDS *tempNode = rootReduce -> next;
-		if(rootReduce == NULL){
+  	finalKeyValueDS *tempNode = rootReduce;
+		if(tempNode == NULL){
        return;
     }
     char dir[100] = "output/ReduceOut/";
     char id[100];
-    char key[100];
+    char numOfRepeats[100];
     char tempName[100]; 
+    
     sprintf(id, "%d", reducerID);
     FILE* word = fopen(strcat(strcat(dir, "Reducer_"),strcat(id,".txt")),"w");
      
-    
-
 		while (tempNode != NULL){
-
-				fputs(tempNode->key,word);
-        fputs(" ", word);
-				sprintf(key,"%d",tempNode->value);
-	    	fputs(key,word);
-        fputs("\n",word);
-			rootReduce = tempNode;
+      fputs(tempNode->key,word); //write word to final text file
+      fputs(" ", word);
+      sprintf(numOfRepeats,"%d",tempNode->value); 
+      fputs(numOfRepeats,word); //write final count to text file
+      fputs("\n",word);
 			tempNode = tempNode -> next;
 		}
     fclose(word);
 }
-    /*sprintf(id, "%d/", mapperID); 
-    sprintf(tempName, "%s", tempNode->key);  
-		FILE* word = fopen(strcat(strcat(dir, id),strcat(tempName,".txt")),"w");
-    fputs(tempNode->key,word);
-    fputs(" ",word);
-*/    
 int main(int argc, char *argv[]) {
 	if(argc < 2){
 		printf("Less number of arguments.\n");
@@ -121,6 +110,6 @@ int main(int argc, char *argv[]) {
 	// So you may delete this function and add your logic
   
 	writeFinalDS(reducerID);
-
+  freeFinalDS(rootReduce);
 	return 0;
 }

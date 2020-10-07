@@ -13,39 +13,63 @@ int main(int argc, char *argv[]) {
 	int nReducers 	= strtol(argv[2], NULL, 10);
 	char *inputFile = argv[3];
 
+  if(nMappers < nReducers){
+    printf("Number of Mappers less than Reducers");
+    exit(0);
+  }
+
 	// ###### DO NOT REMOVE ######
 	bookeepingCode();
 
 	// ###### DO NOT REMOVE ######
 	pid_t pid = fork();
+  
 	if(pid == 0){
 		//send chunks of data to the mappers in RR fashion
 		sendChunkData(inputFile, nMappers);
 		exit(0);
-	}
+	} else if(pid == -1) {
+      perror("Fork problem");
+      exit(-1);
+  }
 
 	sleep(1);
 
   pid_t c; 
   char strID[50]; 
+  int e; 
+  int status;
 
 	// To do
 	// spawn mappers processes and run 'mapper' executable using exec
 	for (int i =1 ; i < nMappers + 1; i++){
     pid_t c = fork(); 
-
-    if( c == 0 ){
+    if(c >0){
+      pid= waitpid(c, NULL, 0);
+    }
+    else if( c == 0 ) {
       // child
-      // execl("/bin/echo", "/bin/echo", "hello", "there", NULL);
       sprintf(strID, "%d", i);
-      execl( "./mapper", "./mapper", strID, NULL ); 
+      e = execl( "./mapper", "./mapper", strID, NULL );
+      if (e == -1){
+        perror("Exec problem");
+        exit(-1); 
+      } else {exit(0);}
+    }
+    else if(pid == -1) {
+      perror("Fork problem");
+      exit(-1);
     }
   }
-  
-	// To do
+
+  int w;
 	// wait for all children to complete execution
   for(int i =0; i<nMappers; i++){
-    wait(NULL);
+    w = wait(NULL);
+    if(w == -1){
+      perror("Wait problem");
+      exit(-1);
+    }
   }
     
 
@@ -56,11 +80,14 @@ int main(int argc, char *argv[]) {
 	if(pid == 0){
 		shuffle(nMappers, nReducers);
 		exit(0);
-	}
+	} else if(pid == -1) {
+      perror("Fork problem");
+      exit(-1);
+  }
 	sleep(1);
 
 
-	// To do
+
 	// spawn reducer processes and run 'reducer' executable using exec
   char strIDReduce[50];
   pid_t g; 
@@ -69,18 +96,26 @@ int main(int argc, char *argv[]) {
      g = fork(); 
 
     if( g == 0 ){
-      // child
-      // execl("/bin/echo", "/bin/echo", "hello", "there", NULL);
       sprintf(strIDReduce, "%d", i);
-      execl( "./reducer", "./reducer" ,strIDReduce, NULL);
-      
-    }
+      e = execl( "./reducer", "./reducer" ,strIDReduce, NULL);
+      exit(0);
+      if (e == -1){
+          perror("Exec problem");
+          exit(-1);
+      }
+    } else if(pid == -1) {
+      perror("Fork problem");
+      exit(-1);
   }
-  
-	// To do
+  }
+
 	// wait for all children to complete execution
   for(int i =0; i<nReducers; i++){
-    wait(NULL);
+    w = wait(NULL);
+    if (w == -1){
+      perror("Wait problem");
+      exit(-1);
+    }
   }
 
 	return 0;
