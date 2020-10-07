@@ -1,4 +1,4 @@
-test machine : CSELAB_machine_name
+test machine : csel-vole3d-04
 date : 10 / 06 / 20
 name : John Schmitz , Mustaf Ahmed , Ellie Hollenberger
 x500 : schm4722 , ahmed719 , holle299
